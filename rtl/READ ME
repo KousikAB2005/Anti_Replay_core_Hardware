@@ -1,0 +1,109 @@
+# Anti-Replay Core – Hardware Security Peripheral (RTL)
+
+## Overview
+
+The **Anti-Replay Core** is a hardware security peripheral implemented in Verilog RTL that prevents replay attacks in sensor communication systems. It is designed to validate incoming packets using a **hardware-enforced monotonic counter** and integrate with microcontrollers through an **APB (Advanced Peripheral Bus) interface**.
+
+This module was developed as part of a **hardware-based packet authentication system** to enhance security in embedded and IoT sensor networks.
+
+---
+
+## Key Features
+
+* Hardware-level **Anti-Replay Protection**
+* **Monotonic Counter** stored in hardware
+* **APB Peripheral Interface** for integration with ARM Cortex-M systems
+* **Single-cycle validation logic**
+* Designed for **FPGA implementation**
+* Suitable for **secure sensor communication**
+
+---
+
+## Architecture
+
+The Anti-Replay Core works by maintaining a **monotonically increasing counter**.
+Each incoming packet includes a counter value. The core performs:
+
+1. Read packet counter
+2. Compare with stored counter
+3. Accept packet if counter is greater
+4. Reject packet if replayed or outdated
+5. Update stored counter if packet is valid
+
+This ensures **old packets cannot be reused in replay attacks**.
+
+---
+
+## RTL Module
+
+The main RTL module is located in:
+
+```
+rtl/anti_replay_core.v
+```
+
+This module implements:
+
+* Packet counter comparison
+* Counter update logic
+* APB register interface
+* Replay detection
+
+---
+
+## Folder Structure
+
+```
+Anti_Replay_core_Hardware
+│
+├── rtl
+│   └── anti_replay_core.v
+│
+├── tb
+│   └── testbench.v
+│
+├── docs
+│   └── architecture.png
+│
+└── README.md
+```
+
+---
+
+## Applications
+
+* Secure IoT sensor communication
+* Embedded security systems
+* FPGA-based hardware security modules
+* Anti-replay protection for wireless communication
+
+---
+
+## FPGA Target
+
+The module is designed to run on FPGA platforms such as:
+
+* Tang Nano FPGA
+* Xilinx Artix series
+* Intel/Altera FPGA boards
+
+---
+
+## Future Improvements
+
+* Integration with **HMAC authentication engine**
+* Support for **multiple packet streams**
+* Secure non-volatile counter storage
+* Hardware Trojan detection compatibility
+
+---
+
+## Author
+
+Midun T S
+
+---
+
+## License
+
+This project is provided for **research and educational purposes**.
