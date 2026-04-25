@@ -41,20 +41,20 @@ Key features:
                     ┌─────────────────────────────┐
                     │       Tang Nano 4K FPGA      │
                     │                              │
-  USB-C UART ──────►│  Gowin Cortex-M3 (EMPU)     │
+  USB-C UART ──────►│  Gowin Cortex-M3 (EMPU)      │
                     │         │                    │
-                    │    APB Bus (psel1)            │
+                    │    APB Bus (psel1)           │
                     │         │                    │
                     │  ┌──────▼──────────────────┐ │
                     │  │  Anti-Replay Security   │ │
                     │  │       Core              │ │
-                    │  │  ┌──────────────────┐  │ │──► alert_led
-                    │  │  │ HMAC Check       │  │ │
-                    │  │  │ Counter Check    │  │ │──► valid_led
-                    │  │  │ Nonce Check      │  │ │
-                    │  │  └──────────────────┘  │ │
+                    │  │  ┌──────────────────┐   │ │──► alert_led
+                    │  │  │ HMAC Check       │   │ │
+                    │  │  │ Counter Check    │   │ │──► valid_led
+                    │  │  │ Nonce Check      │   │ │
+                    │  │  └──────────────────┘   │ │
                     │  └─────────────────────────┘ │
-                    └─────────────────────────────┘
+                    └──────────────────────────────┘
 ```
 
 The Cortex-M3 receives packets over UART, parses them in firmware, and writes the fields into the security core over the APB bus. The RTL FSM performs all three security checks and writes back a pass/fail result code — the CPU only reads an outcome, it never makes the security decision.
