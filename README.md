@@ -38,7 +38,7 @@ Key features:
 ## Architecture
 
 ```
-                    ┌─────────────────────────────┐
+                    ┌──────────────────────────────┐
                     │       Tang Nano 4K FPGA      │
                     │                              │
   USB-C UART ──────►│  Gowin Cortex-M3 (EMPU)      │
