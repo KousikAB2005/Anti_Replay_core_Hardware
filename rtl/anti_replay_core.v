@@ -28,11 +28,10 @@ module anti_replay_core (
     input  wire [31:0] pwdata,
     output reg  [31:0] prdata,
     output reg         pready,
-    output reg         alert,       // HIGH when attack detected
-    output reg         valid_out    // pulses HIGH when packet accepted
+    output reg         alert,       
+    output reg         valid_out    
 );
 
-    // ---- security state — all live in RTL fabric registers ----
     reg [31:0] last_counter;
     reg [31:0] counter_in;
     reg [15:0] nonce_in;
@@ -40,28 +39,22 @@ module anti_replay_core (
     reg [1:0]  result;
     reg        check_trigger;
 
-    // ---- rolling nonce window: 16 slots ----
     reg [15:0] nonce_table [0:15];
     reg [3:0]  nonce_wr_idx;
     integer    i;
-
-    // ---- stats counters ----
     reg [31:0] total_packets;
     reg [31:0] attack_count;
 
-    // ---- FSM states ----
     localparam IDLE  = 2'd0;
     localparam CHECK = 2'd1;
     localparam DONE  = 2'd2;
     reg [1:0] state;
 
-    // ---- result codes ----
+  
     localparam PASS   = 2'd0;
     localparam REPLAY = 2'd1;
     localparam TAMPER = 2'd2;
-
-    // ---- nonce match: pure combinational, single-cycle ----
-    wire nonce_seen =
+  wire nonce_seen =
         (nonce_table[0]  == nonce_in) | (nonce_table[1]  == nonce_in) |
         (nonce_table[2]  == nonce_in) | (nonce_table[3]  == nonce_in) |
         (nonce_table[4]  == nonce_in) | (nonce_table[5]  == nonce_in) |
@@ -93,7 +86,7 @@ module anti_replay_core (
             check_trigger <= 1'b0;
             valid_out     <= 1'b0;
 
-            // ---- APB slave interface ----
+          
             if (psel && !penable) begin
                 pready <= 1'b1;
                 if (pwrite) begin
@@ -129,7 +122,7 @@ module anti_replay_core (
                 pready <= 1'b0;
             end
 
-            // ---- 3-stage security check FSM ----
+          
             case (state)
                 IDLE: begin
                     if (check_trigger) begin
@@ -139,29 +132,28 @@ module anti_replay_core (
                 end
 
                 CHECK: begin
-                    // Stage 1: HMAC — tamper detection
+        
                     if (!hmac_result) begin
                         result       <= TAMPER;
                         alert        <= 1'b1;
                         attack_count <= attack_count + 1;
                         state        <= DONE;
                     end
-                    // Stage 2: Monotonic counter — replay detection
-                    // Lives entirely in hardware — no software reset path
+                  
                     else if (counter_in <= last_counter) begin
                         result       <= REPLAY;
                         alert        <= 1'b1;
                         attack_count <= attack_count + 1;
                         state        <= DONE;
                     end
-                    // Stage 3: Nonce freshness — session replay detection
+                 
                     else if (nonce_seen) begin
                         result       <= REPLAY;
                         alert        <= 1'b1;
                         attack_count <= attack_count + 1;
                         state        <= DONE;
                     end
-                    // All stages passed
+                  
                     else begin
                         result                    <= PASS;
                         alert                     <= 1'b0;
@@ -179,5 +171,4 @@ module anti_replay_core (
             endcase
         end
     end
-
 endmodule
